@@ -35,14 +35,21 @@ def calculate_step_static(x0,xend,n):
 
 #-------------------TRAPEZOIDAL RULE---------------------------
 
-def trapezoidal_step(f,x_current,h):
+def trapezoidal_step(f,x_current,h,tolerance):
     # Single step of trapezoidal rule 
-    return f(x_current)*h
-
+    h_test = 0.5*h
+    f1 = 0.5*(f(x_current) + f(x_current+h))*h
+    f2 = 0.5*(f(x_current) + 2*f(x_current+0.5*h) + f(x_current+h))*h_test
+    error = abs((f2-f1)/3.0) # leading term in the error expression
+    if error <= h_test*tolerance:
+        return (2./3.)*(f2 + f(x_current+0.5*h)), h_test
+    else:
+        return f(x_current)*h, h 
+    
 #--------------------SIMPSONS RULE-------------------------------
 
 def simpson_step(f,x_current,h):
-    return (4./3.)*trapezoidal_step(f,x_current+h,h) - (1./3.)*trapezoidal_step(f,x_current,h)
+    return (4./3.)*trapezoidal_step(f,x_current+h,h,tol)[0] - (1./3.)*trapezoidal_step(f,x_current,h,tol)[0]
 
 #-----------------GENERAL INTEGRATION METHOD--------------------------
 
@@ -50,21 +57,21 @@ def calculate_integral(f,x,x1,x2,method):
     # Integrate between x1 <= x <= x2 using method = trapezoidal/simpson
     # Calculate static stepsize h:
     h = calculate_step_static(-xend,xend,n)
-    
+
     # Decide integration method:
     if method == 's':
         # Sum of f(x) evaluated inside integration range using simpson
-        pts_mid = sum([(4./3.)*trapezoidal_step(f,xi+h,h) - (1./3.)*trapezoidal_step(f,xi,h) for xi in x if xi > x1 and xi < x2])
+        pts_mid = sum([(4./3.)*trapezoidal_step(f,xi+h,h,tol)[0] - (1./3.)*trapezoidal_step(f,xi,h,tol)[0] for xi in x if xi > x1 and xi < x2])
     
         # Sum of f(x) evaluated at end points of integration range
-        pts_end = sum([0.5*trapezoidal_step(f,xi,h) for xi in x if xi == x1 or xi == x2])
+        pts_end = sum([0.5*trapezoidal_step(f,xi,h,tol)[0] for xi in x if xi == x1 or xi == x2])
         
     if method == 't':
         # Sum of f(x) evaluated inside integration range using trapezoidal
-        pts_mid = sum([trapezoidal_step(f,xi,h) for xi in x if xi > x1 and xi < x2])
+        pts_mid = sum([trapezoidal_step(f,xi,h,tol)[0] for xi in x if xi > x1 and xi < x2])
     
         # Sum of f(x) evaluated at end points of integration range
-        pts_end = sum([0.5*trapezoidal_step(f,xi,h) for xi in x if xi == x1 or xi == x2])
+        pts_end = sum([0.5*trapezoidal_step(f,xi,h,tol)[0] for xi in x if xi == x1 or xi == x2])
     
     return (pts_mid + pts_end)
 
@@ -75,9 +82,10 @@ def calculate_integral(f,x,x1,x2,method):
 n = 10000
 xend = 5
 x = np.linspace(-xend,xend,n)
+tol = 0.2
 
 # Calculate normalisation constant such that area under probability curve == 1
-c1 = (calculate_integral(prob,x,x[0],x[-1],'s'))**0.5
+c1 = (calculate_integral(prob,x,x[0],x[-1],'t'))**0.5
 
 # Desired position range x1 --> x2 to integrate between
 x1 = -5
@@ -87,7 +95,7 @@ x2 = 5
 k = 15
 
 #Calculate normalised probability
-p1 = calculate_integral(prob_normalised,x,x1,x2,'s')
+p1 = calculate_integral(prob_normalised,x,x1,x2,'t')
 
 import matplotlib.pyplot as plt
 

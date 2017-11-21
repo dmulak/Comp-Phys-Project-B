@@ -64,21 +64,21 @@ def calculate_integral(f,x,x1,x2,method):
     h = calculate_step_static(-xend,xend,n)
 
     # Decide integration method:
-    if method == 's':
+    if method == 's': # Adaptive Simpson's rule
         # Sum of f(x) evaluated inside integration range using simpson
         pts_mid = sum([(4./3.)*trapezoidal_step(f,xi+h,h,tol) - (1./3.)*trapezoidal_step(f,xi,h,tol) for xi in x if xi > x1 and xi < x2])
     
         # Sum of f(x) evaluated at end points of integration range
         pts_end = sum([0.5*trapezoidal_step(f,xi,h,tol) for xi in x if xi == x1 or xi == x2])
         
-    if method == 't':
+    if method == 't': # Adaptive trapezoidal rule 
         # Sum of f(x) evaluated inside integration range using trapezoidal
         pts_mid = sum([trapezoidal_step(f,xi,h,tol) for xi in x if xi > x1 and xi < x2])
     
         # Sum of f(x) evaluated at end points of integration range
         pts_end = sum([0.5*trapezoidal_step(f,xi,h,tol) for xi in x if xi == x1 or xi == x2])
         
-    if method == 'tstat':
+    if method == 'tstat': # Static trapezoidal rule
         # Sum of f(x) evaluated inside integration range using trapezoidal
         pts_mid = sum([trapezoidal_static(f,xi,h) for xi in x if xi > x1 and xi < x2])
     
@@ -91,7 +91,7 @@ def calculate_integral(f,x,x1,x2,method):
 #---------------------SOME TEST PARAMETERS-----------------------
 
 # Full range of x-coordinates
-n = 10
+n = 1000
 xend = 5
 x = np.linspace(-xend,xend,n)
 tol = 0.2
@@ -117,11 +117,14 @@ import matplotlib.pyplot as plt
 # Plot wavefunction
 plt.figure()
 plt.plot(x,[(1./c1)*wavefunc(x[i]) for i in range(len(x))])
+plt.xlabel('$x$')
+plt.ylabel('$\psi(x)$')
 
 # Plot probability distribution
 plt.figure()
 plt.plot(x,[(1./c1**2)*abs(wavefunc(x[i]))**2 for i in range(len(x))])
-#plt.plot(x,[abs(pdf(x[i],k))**2 for i in range(len(x))],'k--')
+plt.xlabel('$x$')
+plt.ylabel('$P(x)$')
 
 
 

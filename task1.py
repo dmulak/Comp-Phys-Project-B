@@ -102,8 +102,8 @@ c1 = (calculate_integral(prob,x,x[0],x[-1],'t'))**0.5
 
 
 # Desired position range x1 --> x2 to integrate between
-x1 = -5
-x2 = 5
+x1 = 1
+x2 = 2
 
 # Wavepacket wavenumber ?
 k = 15

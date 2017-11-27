@@ -19,7 +19,7 @@ def phase_func(x,k):
 
 def wavefunc(x):
     # Define particle wavefunction as a function of x
-    return (2./np.sqrt(np.pi))*np.exp(-0.5*x**2)*np.exp(phase_func(x,k))
+    return (2./np.sqrt(np.pi))*np.exp(-0.5*x**2)*np.exp(phase_func(x,15))
 
 def prob(x):
     # Calculates integrand at x
@@ -109,7 +109,8 @@ x2 = 2
 k = 15
 
 #Calculate normalised probability
-p1 = calculate_integral(prob_normalised,x,x1,x2,'t')
+p1 = calculate_integral(prob_normalised,x,-xend,xend,'t')
+#p1 = calculate_integral(prob_normalised,x,x1,x2,'t')
 p_stat = calculate_integral(prob_normalised,x,x1,x2,'tstat')
 
 import matplotlib.pyplot as plt

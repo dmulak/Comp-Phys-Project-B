@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Nov 21 19:01:05 2017
+Created on Mon Nov 27 12:00:25 2017
 
 @author: Dominika
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 def wavefunc(x):
     # Define particle wavefunction as a function of x
@@ -25,7 +26,7 @@ def ymax_sampling(f, x, x1, x2):
 def calculate_area(f, x1, x2):
     return (x2 - x1)*ymax_sampling(f, x, x1, x2)
 
-def montecarlo(f, x1, x2, n = 10000):
+def montecarlo(f, x1, x2, n = 1000):
     count = 0
     for i in range(n):
         # Generate n test coords (x,y)
@@ -61,3 +62,10 @@ x2 = 2
 # Calculate normalised probability
 p1m = montecarlo(prob_normalised, x1, x2)
 #p1m = montecarlo(prob_normalised, xstart, xend)
+
+# Plot probability distribution
+plt.figure()
+plt.plot(x,[(1./c1m**2)*abs(wavefunc(x[i]))**2 for i in range(len(x))])
+plt.plot(x, -0.48*abs(x) + 0.98)
+plt.xlabel('$x$')
+plt.ylabel('$P(x)$')
